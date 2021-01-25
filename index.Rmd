@@ -1,0 +1,580 @@
+---
+title: "RMarkdown"
+subtitle: "Encontro Síncrono 03"
+author: 
+  - <br></br>Renata Oliveira
+date: '26/01/2021'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["xaringan-themer.css", "slides.css"]
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+      slideNumberFormat: |
+         <div class="progress-bar-container">
+           <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+           </div>
+         </div>
+
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+```{r xaringan-editable, echo=FALSE}
+xaringanExtra::use_editable(expires = 1)
+```
+
+```{r xaringan-panelset, echo=FALSE, message=FALSE, warning=FALSE}
+xaringanExtra::use_panelset()
+xaringanExtra::style_panelset_tabs(panel_tab_font_family = "sans-serif")
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-fit-screen, echo=FALSE}
+xaringanExtra::use_fit_screen()
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+
+```{css include=FALSE}
+.panelset {
+   --panel-tab-foreground: currentColor;
+   --panel-tab-background: unset;
+   --panel-tab-active-foreground: currentColor;
+   --panel-tab-active-background: unset;
+   --panel-tab-active-border-color: currentColor;
+   --panel-tab-hover-foreground: currentColor;
+   --panel-tab-hover-background: unset;
+   --panel-tab-hover-border-color: currentColor;
+   --panel-tab-inactive-opacity: 0.5;
+   --panel-tabs-border-bottom: #ddd;
+   --panel-tab-font-family: Sen;
+   --panel-tab-background-color-active: #fffbe0;
+   --panel-tab-border-color-active: #023d4d;
+}
+
+.panelset .panel-tabs .panel-tab > a {
+	color: #023d4d;
+}
+
+.panelset .panel-tabs {
+  font-size: 0.5rem;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear",
+           cite.style = "alphabetic",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+myBib <- ReadBib("myBib.bib", check = FALSE)
+library(knitcitations)
+```
+
+class: center, middle
+
+## Retrospecto
+---
+
+## Modelo conceitual da análise de dados
+
+![Modelo de Data Science](https://retaoliveira.github.io/relements/figures/dataR.png)
+---
+
+## Uma pequena lista (por enquanto) de funções essenciais  
+
+- As funções são (na maioria das vezes) verbos, seguidos pelo objeto a que serão aplicados entre parênteses:
+
+```{r eval=FALSE}
+do_this(to_this)
+do_that(to_this, to_that, with_those)
+```
+
+--
+
+- Os pacotes são instalados com a função `install.packages` e carregados com a função `library`, uma vez por sessão:
+
+```{r eval=FALSE}
+install.packages("package_name")
+library(package_name)
+```
+
+---
+
+## Funções essenciais  (continuação)
+
+- apresenta as seis primeiras linhas do banco de dados
+```{r}
+head(mtcars)
+```
+
+---
+
+- mostra os tipos de variáveis e a estrutura do dado
+```{r}
+str(mtcars)
+```
+
+---
+
+- mostra a classe da base de dados
+
+```{r}
+class(mtcars)
+```
+
+--
+
+- mostra a dimensão do objeto
+
+```{r}
+dim(mtcars)
+```
+
+--
+
+- mostra os nomes das variáveis (colunas)
+
+```{r}
+names(mtcars)
+```
+
+---
+
+- A função `c()` permite a construção de vetores por meio alocação de valores em posições distintas de vetores.  
+
+```{r}
+v1 <- c("pato", "sapo", "pato", "gato", "pato")
+```
+
+--
+- As colunas (variáveis) em dataframes são acessadas com `$`:
+
+```{r eval=FALSE}
+dataframe$var_name
+```
+
+---
+
+## Tipos de dados
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+knitr::include_graphics('img/continuous_discrete.png')
+```
+
+---
+
+## Tipos de dados
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+knitr::include_graphics('img/nominal_ordinal_binary.png')
+```
+
+---
+
+## Tipos de dados
+
+- Os tipos de dados mais comuns são `character`, `numeric`, `factor`e `logical`.
+
+Character
+```{r}
+character <- "arroz"
+class(character)
+```
+
+Numeric
+```{r}
+numeric <- 7
+class(numeric)
+```
+
+---
+
+## Tipos de dados
+
+Factor
+```{r}
+factor <- as.factor(c("pato", "gato", "rato", "gato", "pato"))
+class(factor)
+levels(factor)
+```
+
+---
+
+## Tipos de dados
+
+Logical
+```{r}
+logical <- as.logical(c(0,1,1,0))
+class(logical)
+```
+
+---
+
+## Tipos de classes de objetos no R
+
+- As classes de organização dos dados mais comuns são `vector`, `list`, `matrix` e `dataframe`.
+
+.question[
+Um vetor é uma seqüência de elementos de dados do mesmo tipo básico. Os elementos em um vetor são oficialmente chamados de componentes. No entanto, nós os chamaremos apenas de elementos e assumiremos que cada elemento ocupa uma posição no vetor.
+]
+
+---
+
+## Tipos de classes de objetos no R
+
+#### Índice em vetores:
+
+```{r}
+s <- c("aa", "bb", "cc", "dd", "ee") 
+s[3] 
+s[-3]
+s[10]
+
+```
+
+---
+
+## Tipos de classes de objetos no R
+
+.question[
+Uma matriz é uma coleção de elementos de dados dispostos em um layout bidimensional retangular. A seguir, um exemplo de uma matriz com 2 filas e 3 colunas.]
+
+---
+
+## Tipos de classes de objetos no R
+
+```{r}
+A = matrix(c(2, 4, 3, 1, 5, 7), # the data elements 
+     nrow=2,                    # number of rows 
+     ncol=3,                    # number of columns 
+     byrow = TRUE)              # fill matrix by rows 
+A
+
+A[2, 3]
+```    
+
+---
+
+## Tipos de classes de objetos no R
+
+.question[
+Uma lista é um vetor genérico que contém diferentes tipos de objetos.
+]
+
+```{r}
+n <- c(2, 3, 5) 
+s <- c("aa", "bb", "cc", "dd", "ee") 
+x <- list(n, s, 3)   # x contains copies of n, s, b
+x
+```
+
+---
+
+## Tipos de classes de objetos no R
+
+```{r}
+slice <- x[2]
+slice
+
+x[[2]] # member - can be modified
+
+```
+
+---
+
+## Tipos de classes de objetos no R
+
+.question[
+Um `dataframe` é usado para armazenar tabelas de dados. É uma lista de vetores de igual comprimento. Por exemplo, a seguinte variável `df` é uma `dataframe` contendo três vetores n, s, b.
+]
+
+```{r}
+n <- c(2, 3, 5) 
+s <- c("aa", "bb", "cc") 
+b <- c(TRUE, FALSE, TRUE) 
+df <- data.frame(n, s, b)       # df is a data frame
+df
+```
+
+
+---
+
+## Comunicação com RMarkdown
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(viridis)
+library(sugrrants)
+library(lubridate)
+```
+
+## Reprodutibilidade
+
+.question[
+O que significa ser "reprodutível"?
+]
+
+--
+
+Objetivos no curto prazo:
+
+- As tabelas e figuras são reprodutíveis a partir do código e dos dados?
+- O código realmente faz o que você acha que faz?
+- Além do que foi feito, é claro *por que* foi feito? 
+
+Objetivos no longo prazo:
+
+- O código pode ser usado para outros dados?
+- Você pode estender o código para fazer outras coisas?
+
+---
+
+## RMarkdown
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/render.png")
+```
+.footnote[
+Alison Hill [Teaching in Production](https://rstudio-education.github.io/teaching-in-production/slides/index.html#1)
+]
+
+---
+
+## RMarkdown
+
+.panelset[
+.panel[.panel-name[O que é?]
+
+Vou colocar aqui algumas informações-chave sobre a construção geral de informações a partir do uso do RMarkdown. Entretanto, informações adicionais podem ser obtidas de maneira detalhada no site: 
+
++ [Documentos dinâmicos no R by Fernando Mayer & Walmes Zeviani](http://cursos.leg.ufpr.br/prr/capDocDin.html)
+]
+
+.panel[.panel-name[Organização]
+### Seções e subseções
+
+Para demarcar seções e subseções, utilize os `hashtags`. 
+
+### Listas e ordenação
+
+Basta enumerar:
+
+1. Item 1
+2. Item 2
+
+]
+
+.panel[.panel-name[Imagens]
+
+![Figura 1: RMarkdown](https://retaoliveira.github.io/relements/figures/allison_horst/rmarkdown_rockstar.png)
+
+]
+
+.panel[.panel-name[Chunks]
+
+```{r}
+x <- rnorm(30)
+x
+
+```
+]
+
+.panel[.panel-name[Mais chunks]
+```{r}
+plot(x)
+```
+]
+]
+
+---
+
+.panelset[
+
+.panel[.panel-name[Visualização]
+
+Também podemos fazer um histograma dessa variável simulada
+
+```{r}
+hist(x)
+```
+
+]
+
+.panel[.panel-name[YAML]
+
+#### `YAML` (Yet Another Markup Language)
+
+No `YAML`, os dados são escritos em forma de lista aninhada. Os metadados em `YAML` são colocados sempre no início de um documento, e são delimitados por `---`. 
+]
+
+.panel[.panel-name[Gerando...]
+
+`knitr`
+
+]
+
+.panel[.panel-name[WOW!]
+
+Na [galeria do RStudio](https://rmarkdown.rstudio.com/gallery.html) diferentes estruturas de informação produzida por meio de `RMarkdown` podem ser encontradas! 
+
+]
+
+.panel[.panel-name[RPubs]
+
+
+No RStudio, crie um novo documento `R Markdown` escolhendo `Arquivo | Novo | R Markdown`.
+Clique no botão `Knit HTML` na barra de ferramentas do doc para visualizar seu documento.
+Na janela de pré-visualização, clique no botão `Publicar`.
+
+É um processo em duas etapas. Na primeira etapa, você precisa registrar uma conta `RPubs` ou fazer o login, caso já tenha uma. Você escreve o título de seu documento e dá uma breve descrição (para que outros possam encontrar seu trabalho a partir da busca). 
+
+Uma vez terminado e clicando no botão `Continue` na parte inferior, você irá diretamente para o artigo publicado. 
+
+Você pode optar por atualizar seu conteúdo.
+
+
+]
+]
+
+
+---
+
+
+## Ambiente de trabalho do Rmarkdown
+
+.tip[
+O ambiente de seu documento R Markdown é separado do Console!
+]
+
+Lembre-se disso e espere que ele _o morda_ algumas vezes enquanto você aprende a trabalhar 
+com R Markdown!
+
+---
+
+## Ambiente de trabalho do Rmarkdown
+
+.pull-left[
+Primeiro, rode em seu console:
+
+
+```{r eval = FALSE}
+x <- 2
+x * 3
+```
+
+
+.question[
+Tudo parece bem, eh?
+]
+]
+
+--
+
+.pull-right[
+Digite então o código em um chunk no seu documento Rmarkdown
+
+
+```{r eval = FALSE}
+x * 3
+```
+
+
+.question[
+O que aconteceu? Como fazer para rodá-lo?
+]
+]
+
+.tip[
+Dicas:    
+`Ctrl + Alt + i`   
+`Ctrl + Enter`
+]
+
+
+---
+
+## Como usaremos o R Markdown?
+
+- Cada tarefa / relatório / projeto / etc. é um documento R Markdown
+- Você sempre terá um modelo de documento R Markdown para começar a atividade ou uma orientação quanto ao `template`
+
+---
+
+## Encaminhamentos:
+
+1. Tutorial de R - Swirl
+2. Atividades no SIGAA
+3. Projeto integrador
+
+<br></br>
+
+.center[
+## ENGAJAMENTO!
+]
+
+---
+
+### Sua vez!
+
+1. Gere um documento R markdown no RStudio considerando o `Default Output Format` `HTML`.
+2. `knit` o documento para diferentes outputs. Escreva algum conteúdo próprio. 
+3. Crie um chunk e gere um dataframe 
+4. `knit` o documento novamente. 
+
+### Outra exploração:
+
+1. Instale o package `flexdashboard` (install.packages("flexdashboard"))
+2. Gere um documento desse tipo no RStudio.
+3. Inclua dados e representações simples. Pode utilizar o `mtcars` e as funções `plot()`, `hist()` e `boxplot()`   
+4. Gere um `summary()` de algum dos vetores que compõe o dataframe. 
+
+---
+
+### Fazendo uma apresentação no R!
+
+1. Instale os pacotes install.packages(c("xaringan", "xaringanExtra", "xaringanthemer"))
+2. Gere um arquivo R markdown do tipo Ninja Xaringan Themer. 
+3. `knit` o documento. 
+4. Visite o site [color-hex](https://www.color-hex.com/) e altere o padrão de cores da apresentação.
+
+---
+
+class: inverse, center, middle
+
+# DÚVIDAS?
+
+
+---
+
+# References
+
+```{r refs, echo=FALSE, results="asis"}
+PrintBibliography(myBib)
+```
